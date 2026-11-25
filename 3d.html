@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Form3D 3D studiyasi — bir nechta rasmdan aniq teksturali 3D model yarating, o‘lcham va qalinlikni sozlang, GLB/OBJ/STL eksport qiling.">
+<meta name="theme-color" content="#6d5efc">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<title>3D studiya — Form3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="3d">
+<div id="site-header"></div>
+
+<main>
+  <div class="page-head container">
+    <div class="crumb"><a href="index.html">Bosh sahifa</a> / <span>3D studiya</span></div>
+    <h1>3D model studiyasi</h1>
+    <p class="lead">Bir yoki bir nechta rasm yuklang — 3D model darhol yaratiladi. Asosiy rasm tanlanadi, qolgan rasmlar esa ob’ektning ko‘rinmaydigan tomonlarini tiklashga yordam beradi.</p>
+  </div>
+
+  <div class="container studio-layout">
+    <!-- CONTROL PANEL -->
+    <aside class="panel">
+      <div class="panel-pad">
+        <!-- upload -->
+        <div class="panel-title"><span>1 · Rasmlar</span><span class="pill" id="imgCount">0</span></div>
+        <div class="dropzone" id="drop">
+          <svg class="ico"><use href="#i-upload"></use></svg>
+          <b id="dropTitle">Rasmlarni tashlang</b>
+          <span id="dropSub">yoki bosib tanlang · bir nechtasini tanlash mumkin</span>
+        </div>
+        <input type="file" id="file" accept="image/*" multiple hidden>
+        <div class="thumbs" id="thumbs"></div>
+        <p class="hintline">PNG · JPG · WebP · GIF — eng ko‘pi bilan 8 ta rasm. Asosiy rasmni almashtirish uchun miniaturaga bosing.</p>
+        <button class="btn ghost sm block mt-2" id="clearAll">Barchasini tozalash</button>
+
+        <div class="divider"></div>
+
+        <!-- combine layout -->
+        <div class="panel-title"><span>2 · Birlashtirish usuli</span></div>
+        <div class="seg" style="--cols:2">
+          <label><input type="radio" name="layout" value="auto" checked><span>Avtomatik</span><small>eng yaxshi rasm</small></label>
+          <label><input type="radio" name="layout" value="overlay"><span>Ustma-ust</span><small>shaffof qatlamlar</small></label>
+          <label><input type="radio" name="layout" value="grid"><span>Katak</span><small>barcha ob’ektlar</small></label>
+          <label><input type="radio" name="layout" value="row"><span>Yonma-yon</span><small>bitta tasma</small></label>
+          <label><input type="radio" name="layout" value="first"><span>Faqat 1-rasm</span><small>asosiy rasm</small></label>
+        </div>
+        <p class="hintline" id="layoutNote">Eng yaxshi rasm asosiy old tomon sifatida tanlanadi; qolganlari AI 4 tomon rejimida orqa va yon ko‘rinishlar uchun ishlatiladi.</p>
+
+        <div class="divider"></div>
+
+        <!-- mode -->
+        <div class="panel-title"><span>3 · Yaratish rejimi</span></div>
+        <div class="seg" style="--cols:3">
+          <label><input type="radio" name="mode" value="relief" checked><svg class="ico"><use href="#i-image"></use></svg><span>Teksturali relyef</span><small>asl rasmga mos</small></label>
+          <label><input type="radio" name="mode" value="ai360"><svg class="ico"><use href="#i-cube"></use></svg><span>AI 4 tomon</span><small>oldin 4 ko‘rinish</small></label>
+          <label><input type="radio" name="mode" value="ai"><svg class="ico"><use href="#i-wand"></use></svg><span>AI bulut</span><small>agar mavjud bo‘lsa</small></label>
+        </div>
+        <p class="hintline" id="modeNote">AI 4 tomon: avval old, orqa, chap va o‘ng ko‘rinishlarni yaratadi, keyin ular asosida to‘liq 3D model quradi.</p>
+      </div>
+
+      <!-- quality accordion -->
+      <details class="accordion" open>
+        <summary>4 · Geometriya sifati <svg class="ico"><use href="#i-chevron"></use></svg></summary>
+        <div class="inner" id="relOpts">
+          <div class="row" style="margin-bottom:12px">
+            <button class="chip" data-preset="flat">Yassi</button>
+            <button class="chip" data-preset="balanced">Muvozanatli</button>
+            <button class="chip" data-preset="deep">Chuqur</button>
+          </div>
+          <div class="field"><label>Qalinlik <output id="oThick">45%</output></label><input type="range" id="thick" min="5" max="100" value="45"></div>
+          <div class="field"><label>Detallik <output id="oDetail">55</output></label><input type="range" id="detail" min="0" max="100" value="55"></div>
+          <div class="field"><label>Silliqlik <output id="oSmooth">35</output></label><input type="range" id="smooth" min="0" max="100" value="35"></div>
+          <div class="field"><label>Fonni olib tashlash <output id="oBg">26</output></label><input type="range" id="bgTol" min="0" max="100" value="26"></div>
+          <div class="field"><label>Fon ob’ektlarini olib tashlash <output id="oIso">78%</output></label><input type="range" id="iso" min="0" max="100" value="78"></div>
+          <div class="field"><label>Tarmoq aniqligi <output id="oRes">200</output></label><input type="range" id="res" min="140" max="360" step="20" value="200"></div>
+          <div class="note-box">Yuqori ajratish darajasi fondagi boshqa buyumlarni ham o‘chirib, faqat markaziy ob’ektni qoldiradi. Agar ob’ekt qismlari ajralib ketsa, bu slayderni pasaytiring.</div>
+        </div>
+        <div class="inner" id="aiOpts" style="display:none">
+          <div class="note-box">Bulut AI rejimi barcha rasmlarni tahlil qilib, bitta izchil model quradi. Oddiy brauzerda “AI 360°” rejimidan foydalaning — u berilgan tomonni aks ettirib, qolgan barcha yuzalarni tug‘diradi.</div>
+        </div>
+      </details>
+
+      <!-- transform accordion -->
+      <details class="accordion">
+        <summary>5 · Modelni sozlash <svg class="ico"><use href="#i-chevron"></use></svg></summary>
+        <div class="inner" id="layerProps" style="opacity:1">
+          <div class="field"><label>Kenglik (en) <output id="oScW">100%</output></label><input type="range" id="scW" min="30" max="200" value="100"></div>
+          <div class="field"><label>Balandlik (bo‘y) <output id="oScH">100%</output></label><input type="range" id="scH" min="30" max="200" value="100"></div>
+          <div class="field"><label>Qalinlik (chuqurlik) <output id="oScD">100%</output></label><input type="range" id="scD" min="20" max="250" value="100"></div>
+          <div class="divider"></div>
+          <div class="field"><label>Aylanish X <output id="oRotX">0°</output></label><input type="range" id="rotX" min="-90" max="90" value="0"></div>
+          <div class="field"><label>Aylanish Y <output id="oRotY">0°</output></label><input type="range" id="rotY" min="-180" max="180" value="0"></div>
+          <div class="field"><label>Aylanish Z <output id="oRotZ">0°</output></label><input type="range" id="rotZ" min="-180" max="180" value="0"></div>
+          <p class="hintline">O‘zgarishlar darhol 3D ko‘rinishga qo‘llaniladi.</p>
+        </div>
+      </details>
+
+      <div class="panel-pad">
+        <button class="btn block lg" id="go" disabled><svg class="ico"><use href="#i-cube"></use></svg> 3D model yaratish</button>
+        <div class="divider"></div>
+        <div class="panel-title"><span>6 · Yuklab olish</span></div>
+        <div class="stack">
+          <button class="btn ghost block" id="dlZip" disabled><svg class="ico"><use href="#i-download"></use></svg> ZIP: GLB + OBJ + STL</button>
+          <button class="btn ghost block" id="dlPng" disabled><svg class="ico"><use href="#i-image"></use></svg> 3D ko‘rinishni PNG qilish</button>
+          <button class="btn soft block" id="dlWeb" disabled><svg class="ico"><use href="#i-globe"></use></svg> Web uchun 2D render (shaffof)</button>
+          <button class="btn soft block" id="to2d" disabled><svg class="ico"><use href="#i-arrow"></use></svg> 2D studiyaga o‘tkazish</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- STAGE -->
+    <section>
+      <div class="stage" id="stage">
+        <div class="toolbar" style="display:none">
+          <button class="tool-btn" id="wf" title="Simli ko‘rinish"><svg class="ico"><use href="#i-box"></use></svg> Tur</button>
+          <button class="tool-btn on" id="ar" title="Avtomatik aylanish"><svg class="ico"><use href="#i-rotate"></use></svg> Aylanish</button>
+          <button class="tool-btn" id="gr" title="To‘r"><svg class="ico"><use href="#i-sliders"></use></svg> To‘r</button>
+          <span class="spacer"></span>
+          <button class="tool-btn" id="rs" title="Kamerani tiklash"><svg class="ico"><use href="#i-refresh"></use></svg> Kamera</button>
+        </div>
+        <div class="stage-overlay" id="empty">
+          <div class="big">🧊</div>
+          <h3 id="et">Rasm yuklang — 3D model avtomatik yaratiladi</h3>
+          <p>Bir nechta rasm qo‘shing: eng yaxshisi asosiy ko‘rinish, qolganlari orqa va yon tomonlar uchun ishlatiladi.</p>
+        </div>
+        <div class="stage-overlay busy hide" id="busy">
+          <div class="big">⚙️</div>
+          <h3 id="bt">Tayyorlanmoqda…</h3>
+          <div class="prog"><i id="bi"></i></div>
+        </div>
+        <div class="stage-hint" id="hint" style="display:none">Chap tugma — aylantirish · G‘ildirak — yaqinlashtirish · O‘ng tugma — siljitish</div>
+        <div class="stage-badge" id="badge">3D ko‘rinish</div>
+      </div>
+      <div class="card views-panel hide mt-3" id="viewsPanel">
+        <div class="panel-title"><span>AI yaratgan 4 tomon ko‘rinishi</span><span class="pill">1-bosqich</span></div>
+        <p class="hintline">AI ob’ektni tahlil qilib, ko‘rinmaydigan tomonlarini ham oldindan quradi. 3D model aynan shu ko‘rinishlar asosida yaratiladi (2-bosqich). Real AI muhiti mavjud bo‘lsa tahlil AI tomonidan, aks holda mahalliy taxmin asosida bajariladi.</p>
+        <div class="view-grid" id="views"></div>
+      </div>
+      <div class="note-box mt-3"><strong>Maslahat:</strong> model faqat asosiy ob’ektdan quriladi — fon va fondagi boshqa narsalar avtomatik olib tashlanadi, so‘ngra rasm ob’ekt atrofida qirqilib, tekstura sifati oshiriladi. Shaffof PNG eng toza natija beradi.</div>
+    </section>
+  </div>
+
+  <section class="section tight" style="background:var(--bg-alt)">
+    <div class="container">
+      <div class="section-head reveal"><span class="eyebrow">Batafsil</span><h2>3D studiya haqida</h2><p>Natijani yaxshilash uchun nimalarga e'tibor berish kerak.</p></div>
+      <div class="grid g3">
+        <div class="card reveal"><div class="ico-box"><svg class="ico"><use href="#i-layers"></use></svg></div><h3>4 tomon AI</h3><p>“AI 4 tomon” rejimi avval old, orqa, chap va o‘ng ko‘rinishlarni yaratadi, keyin ular asosida butun 3D jismni quradi.</p></div>
+        <div class="card reveal"><div class="ico-box"><svg class="ico"><use href="#i-sliders"></use></svg></div><h3>Haqiqiy o‘lchamlar</h3><p>Eni, bo‘yi va qalinligi alohida slayderlarda. 3D printer uchun STL olishda qalinlik ayniqsa muhim.</p></div>
+        <div class="card reveal"><div class="ico-box"><svg class="ico"><use href="#i-shield"></use></svg></div><h3>Mahalliy hisoblash</h3><p>Relyef rejimida hech qanday ma'lumot internetga yuborilmaydi — butun jarayon brauzeringizda kechadi.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<!-- Local copies: the studio works even without internet access -->
+<script src="assets/vendor/three.min.js"></script>
+<script src="assets/vendor/OrbitControls.js"></script>
+<script src="assets/vendor/GLTFExporter.js"></script>
+<script src="assets/vendor/OBJExporter.js"></script>
+<script src="assets/vendor/STLExporter.js"></script>
+<script src="assets/vendor/jszip.min.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/relief.js"></script>
+<script src="assets/js/three-studio.js"></script>
+</body>
+</html>

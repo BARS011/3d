@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Form3D 2D studiyasi — rasmlardan qatlamli web dizayn yaratish, fonni olib tashlash, filtrlar va PNG/WebP/SVG eksporti.">
+<meta name="theme-color" content="#6d5efc">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<title>2D Web studiya — Form3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="2d">
+<div id="site-header"></div>
+
+<main>
+  <div class="page-head container">
+    <div class="crumb"><a href="index.html">Bosh sahifa</a> / <span>2D studiya</span></div>
+    <h1>2D Web dizayn studiyasi</h1>
+    <p class="lead">Bir nechta rasmni qatlam sifatida joylashtiring, fonni olib tashlang, filtr qo‘shing va web uchun tayyor PNG, WebP yoki SVG oling.</p>
+  </div>
+
+  <div class="container editor-layout">
+    <!-- LEFT: layers & canvas -->
+    <aside class="panel panel-pad">
+      <div class="panel-title"><span>1 · Rasmlar</span><svg class="ico"><use href="#i-layers"></use></svg></div>
+      <div class="dropzone" id="drop2">
+        <svg class="ico"><use href="#i-upload"></use></svg>
+        <b>Rasmlarni tashlang</b>
+        <span>bosib bir nechtasini tanlang</span>
+      </div>
+      <input type="file" id="file2" accept="image/*" multiple hidden>
+      <p class="hintline">Har bir rasm alohida qatlam bo‘ladi (eng ko‘pi 12 ta).</p>
+      <div class="divider"></div>
+      <div class="panel-title"><span>2 · Qatlamlar</span><span class="pill" id="canvasInfo">1200 × 630 px</span></div>
+      <div class="layer-list" id="layerList"></div>
+      <button class="btn ghost sm block mt-3" id="clearLayers">Barcha qatlamlarni o‘chirish</button>
+
+      <div class="divider"></div>
+      <div class="panel-title"><span>3 · Tuval o‘lchami</span></div>
+      <div class="size-row">
+        <button class="chip on" data-size="1200x630">Web 1200×630</button>
+        <button class="chip" data-size="1080x1080">Post 1080²</button>
+        <button class="chip" data-size="1920x1080">Cover 1920×1080</button>
+        <button class="chip" data-size="800x600">Klassik 800×600</button>
+      </div>
+      <div class="row mt-3">
+        <input type="number" id="cwIn" min="64" max="3000" value="1200" style="width:46%">
+        <span class="faint">×</span>
+        <input type="number" id="chIn" min="64" max="3000" value="630" style="width:46%">
+      </div>
+      <button class="btn soft sm block mt-2" id="applySize">O‘lchamni qo‘llash</button>
+
+      <div class="divider"></div>
+      <div class="panel-title"><span>4 · Fon</span></div>
+      <div class="color-row">
+        <input type="color" id="bgColor" value="#ffffff">
+        <span class="muted" style="font-size:.82rem">Fon rangi</span>
+        <label class="row" style="margin-left:auto;font-size:.8rem"><input type="checkbox" id="transparent"> Shaffof</label>
+      </div>
+    </aside>
+
+    <!-- CENTER: canvas -->
+    <section class="editor-center">
+      <div class="panel panel-pad">
+        <div class="panel-title"><span>Tirik ko‘rinish</span><span class="pill ok">Joniy</span></div>
+        <div class="canvas-wrap"><canvas id="c2d" width="1200" height="630"></canvas></div>
+      </div>
+      <div class="panel panel-pad">
+        <div class="panel-title"><span>5 · Eksport</span></div>
+        <div class="export-bar">
+          <button class="btn" id="dlPng2"><svg class="ico"><use href="#i-image"></use></svg> PNG</button>
+          <button class="btn ghost" id="dlWebp"><svg class="ico"><use href="#i-globe"></use></svg> WebP</button>
+          <button class="btn ghost" id="dlSvg"><svg class="ico"><use href="#i-box"></use></svg> SVG</button>
+          <button class="btn soft" id="copyPng"><svg class="ico"><use href="#i-copy"></use></svg> Nusxalash</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: properties -->
+    <aside class="panel panel-pad editor-right">
+      <div class="panel-title"><span>6 · Qatlam xususiyatlari</span><svg class="ico"><use href="#i-sliders"></use></svg></div>
+      <div id="layerProps" style="opacity:.45">
+        <div class="field"><label>Masshtab <output id="oScale">100%</output></label><input type="range" id="selScale" min="5" max="400" value="100"></div>
+        <div class="field"><label>Burish <output id="oRot">0°</output></label><input type="range" id="selRot" min="-180" max="180" value="0"></div>
+        <div class="field"><label>Shaffoflik <output id="oOpacity">100%</output></label><input type="range" id="selOpacity" min="5" max="100" value="100"></div>
+        <div class="field"><label>Gorizontal holat <output id="oX">50%</output></label><input type="range" id="selX" min="0" max="100" value="50"></div>
+        <div class="field"><label>Vertikal holat <output id="oY">50%</output></label><input type="range" id="selY" min="0" max="100" value="50"></div>
+        <div class="row"><button class="chip" id="flipH">⇔ Gorizontal aks</button><button class="chip" id="flipV">⇕ Vertikal aks</button></div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel-title"><span>7 · Fonni olib tashlash</span></div>
+      <div class="field"><label>Sezuvchanlik <output id="oTol2">28</output></label><input type="range" id="bgTol2" min="0" max="100" value="28"></div>
+      <div class="field"><label>Faqat asosiy ob’ekt <output id="oIso2">78%</output></label><input type="range" id="iso2" min="0" max="100" value="78"></div>
+      <button class="btn soft sm block" id="removeBg2">Tanlangan qatlamni tozalash</button>
+      <p class="hintline">Oq yoki bir xil fonli rasmlar uchun eng yaxshi ishlaydi.</p>
+
+      <div class="divider"></div>
+      <div class="panel-title"><span>8 · Filtrlar</span><button class="chip" id="resetFilters">Tiklash</button></div>
+      <div class="filter-grid">
+        <div class="field"><label>Yorug‘lik <output id="oBright">100%</output></label><input type="range" id="fBright" min="0" max="200" value="100"></div>
+        <div class="field"><label>Kontrast <output id="oContrast">100%</output></label><input type="range" id="fContrast" min="0" max="200" value="100"></div>
+        <div class="field"><label>To‘yinganlik <output id="oSat">100%</output></label><input type="range" id="fSat" min="0" max="200" value="100"></div>
+        <div class="field"><label>Bulanish <output id="oBlur">0px</output></label><input type="range" id="fBlur" min="0" max="20" value="0"></div>
+        <div class="field"><label>Oq-qora <output id="oGray">0%</output></label><input type="range" id="fGray" min="0" max="100" value="0"></div>
+        <div class="field"><label>Sepiya <output id="oSepia">0%</output></label><input type="range" id="fSepia" min="0" max="100" value="0"></div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="section tight" style="background:var(--bg-alt)">
+    <div class="container">
+      <div class="section-head reveal"><span class="eyebrow">2D imkoniyatlari</span><h2>Web uchun tayyor dizayn</h2><p>Qatlamli ish jarayoni dizaynni tez va qulay qiladi.</p></div>
+      <div class="grid g3">
+        <div class="card reveal"><div class="ico-box"><svg class="ico"><use href="#i-layers"></use></svg></div><h3>Qatlamlar</h3><p>Har bir rasm mustaqil qatlam: tartib, ko‘rinish, masshtab, burish va shaffoflikni boshqaring.</p></div>
+        <div class="card reveal"><div class="ico-box"><svg class="ico"><use href="#i-wand"></use></svg></div><h3>Fonni olib tashlash</h3><p>Bir tugma bilan fonni shaffof qilib, logotip yoki mahsulot tasvirini ajrating.</p></div>
+        <div class="card reveal"><div class="ico-box"><svg class="ico"><use href="#i-globe"></use></svg></div><h3>Web formatlari</h3><p>PNG va WebP rasmlar, SVG vektorli variant va to‘g‘ridan-to‘g‘ri panelyarga nusxalash.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/common.js"></script>
+<script src="assets/js/relief.js"></script>
+<script src="assets/js/two-d-studio.js"></script>
+<script>
+[['bgTol2','oTol2',''],['iso2','oIso2','%']].forEach(function(p){
+  document.getElementById(p[0]).addEventListener('input', function(){
+    document.getElementById(p[1]).textContent = this.value + p[2];
+  });
+});
+</script>
+</body>
+</html>

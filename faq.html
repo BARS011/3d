@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Form3D haqida ko‘p so‘raladigan savollar va javoblar: ko‘p rasm, tekstura, sozlamalar, eksport formatlari va maxfiylik.">
+<meta name="theme-color" content="#6d5efc">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<title>Savollar va javoblar — Form3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="faq">
+<div id="site-header"></div>
+
+<main>
+  <div class="page-head container">
+    <div class="crumb"><a href="index.html">Bosh sahifa</a> / <span>Savollar</span></div>
+    <h1>Ko‘p so‘raladigan savollar</h1>
+    <p class="lead">Loyihangiz bilan bog‘liq eng ko‘p uchraydigan savollarga javob to‘plami. Agar javob topilmasa, pastdagi aloqa bo‘limiga yozing.</p>
+  </div>
+
+  <section class="section tight">
+    <div class="container" style="max-width:900px">
+      <div class="faq-cat">Rasmlar va natija sifati</div>
+      <div class="faq-list">
+        <details class="faq-item reveal"><summary>Bir nechta rasmni qanday qilib bitta modelga birlashtiraman?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">3D studiyada barcha rasmlarni yuklang va “Birlashtirish usuli” bo‘limidan usul tanlang. Ustma-ust rejimi shaffof PNG qatlamlari uchun, Katak rejimi bir nechta mustaqil ob’ekt uchun, Yonma-yon esa yagona tasma kompozitsiya uchun mos keladi. Barcha rasmlar bitta tuvalga joylashtirilib, bitta jism quriladi.</div></details>
+        <details class="faq-item reveal"><summary>Rasm o‘zgarib, buzilib ketmaydimi?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">Yo‘q. Teksturali relyef rejimida rasmning asl piksellari to‘g‘ridan-to‘g‘ri model yuzasiga tekstura sifatida qo‘yiladi. Faqat chuqurlik xaritasi qo‘shiladi — ranglar, shakl va detallar saqlanadi.</div></details>
+        <details class="faq-item reveal"><summary>Qaysi rasm eng yaxshi natija beradi?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">Markazda bitta ob’ekt joylashgan, bir xil yoki shaffof fonli, yorug‘ligi yaxshi tushirilgan rasm. Shaffof PNG eng aniq natijani beradi, chunki fon avtomatik ravishda to‘liq ajratiladi.</div></details>
+        <details class="faq-item reveal"><summary>AI 4 tomon rejimi qanday ishlaydi?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">Bu rejim ikki bosqichda ishlaydi. Birinchi bosqichda AI ob’ektni tahlil qilib, uning old, orqa, chap va o‘ng ko‘rinishlarini yaratadi — ular ekranda alohida ko‘rinishlar sifatida ko‘rsatiladi. Ikkinchi bosqichda 3D model aynan shu to‘rt ko‘rinish asosida quriladi, shu sababli barcha yuzalar izchil, yopiq va silliq chiqadi. Real AI muhiti mavjud bo‘lsa tahlil AI tomonidan bajariladi, aks holda mahalliy taxmin ishlatiladi.</div></details>
+        <details class="faq-item reveal"><summary>Bu professional fotogrammetriya darajasidami?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">Yo‘q. To‘liq fotogrammetriya maxsus server modellari va ko‘p burchakli suratlar talab qiladi. Form3D brauzerda ishlaydi: relyef rejimi rasm asosida hajm beradi, AI 360° yuzalarni alohida quradi, bulut AI rejimi esa taxminiy geometrik shakllardan model quradi. Natija ob’ektga qarab farq qiladi.</div></details>
+      </div>
+
+      <div class="faq-cat">Sozlamalar va eksport</div>
+      <div class="faq-list">
+        <details class="faq-item reveal"><summary>Modelning o‘lchamlarini qanday o‘zgartiraman?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">Model yaratilgandan so‘ng “Modelni sozlash” bo‘limini oching. Kenglik, balandlik va qalinlik slayderlari jismni mos ravishda X, Y va Z o‘qlari bo‘yicha o‘zgartiradi. O‘zgarish darhol ko‘rinadi.</div></details>
+        <details class="faq-item reveal"><summary>Qalinlik bilan detallikni farqi nima?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">Qalinlik butun jismning old-orqa chuqurligini belgilaydi. Detallik esa yuzadagi mayda relyef o‘zgarishlarining qanchalik ko‘rinishini boshqaradi. Silliqlik chekkalar va yuzani yumshoqlashtiradi.</div></details>
+        <details class="faq-item reveal"><summary>Fayllar nima uchun ZIP ichida?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">Brauzer xavfsizligi sababli bir nechta faylni alohida saqlash ba’zan cheklanadi. Shuning uchun GLB, OBJ va STL bitta ZIP arxivida beriladi — uni ochib, kerakli faylni chiqarib oling.</div></details>
+        <details class="faq-item reveal"><summary>Web uchun 2D render nima qiladi?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">3D modelning old tomondan tekis, shaffof fonli tasvirini 1200×1200 o‘lchamda PNG sifatida saqlaydi. Uni saytda, prezentatsiyada yoki keyinchalik 2D studiyada ishlatishingiz mumkin.</div></details>
+        <details class="faq-item reveal"><summary>2D studiyada SVG eksport qanday ishlaydi?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">Barcha ko‘rinadigan qatlamlar ularning o‘rin, masshtab, burish va shaffoflik parametrlari bilan SVG hujjatiga joylashtiriladi. Tasvirlar ichiga kiritiladi, shuning uchun fayl mustaqil ochiladi.</div></details>
+      </div>
+
+      <div class="faq-cat">Maxfiylik va muvofiqlik</div>
+      <div class="faq-list">
+        <details class="faq-item reveal"><summary>Fayllarim serverga yuboriladimi?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">Teksturali relyef va 2D rejimlarida yo‘q — hamma narsa to‘g‘ridan-to‘g‘ri brauzeringizda hisoblanadi. AI rejimi faqat siz uni tanlaganingizda va mos muhit mavjud bo‘lganda ishlaydi.</div></details>
+        <details class="faq-item reveal"><summary>Qaysi brauzerlarda ishlaydi?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">Zamonaviy Chrome, Edge, Firefox va Safari versiyalarida ishlaydi. 3D ko‘rinish WebGL talab qiladi — agar ko‘rinish bo‘sh qolsa, brauzerni yangilang yoki apparat tezlatishni yoqing.</div></details>
+        <details class="faq-item reveal"><summary>Nechta rasm yuklay olaman?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">3D studiyada eng ko‘pi 8 ta, 2D studiyada 12 ta qatlam. Ko‘p rasmlar birlashtirilib bitta model yoki bitta dizayn hosil qiladi.</div></details>
+        <details class="faq-item reveal"><summary>AI rejimi nega o‘chirilgan?<svg class="ico"><use href="#i-chevron"></use></svg></summary><div class="faq-body">AI rejimi faqat uni qo‘llab-quvvatlaydigan muhitda faollashadi. Oddiy brauzerda u o‘chirilgan bo‘ladi va teksturali relyef rejimi avtomatik tanlanadi.</div></details>
+      </div>
+
+      <div class="card mt-5 contact-card" id="aloqa">
+        <div>
+          <span class="eyebrow">Aloqa</span>
+          <h2 style="margin:0 0 8px">Javob topolmadingizmi?</h2>
+          <p class="muted">Fikr, taklif yoki muammo haqida yozing — biz yordam berishga tayyormiz.</p>
+        </div>
+        <div class="contact-actions">
+          <a href="mailto:hello@form3d.uz" class="btn"><svg class="ico"><use href="#i-mail"></use></svg> Yozish</a>
+          <a href="how-it-works.html" class="btn ghost">Qo‘llanmani o‘qish</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="assets/js/common.js"></script>
+</body>
+</html>

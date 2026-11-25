@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Form3D — Rasmdan 3D model yaratish</title>
+<style>
+:root{--bg:#f6f6fa;--card:#fff;--tx:#17171c;--mut:#686873;--ac:#6246ea;--ac2:#a14bff;--acx:#fff;--bd:#e1e1ea;--stage:#ebebf3;--hd:#ffffffee;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e0e12;--card:#18181e;--tx:#f3f3f7;--mut:#9b9ba6;--ac:#8f78ff;--ac2:#c47bff;--acx:#120d24;--bd:#2a2a33;--stage:#13131a;--hd:#0e0e12ee;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e0e12;--card:#18181e;--tx:#f3f3f7;--mut:#9b9ba6;--ac:#8f78ff;--ac2:#c47bff;--acx:#120d24;--bd:#2a2a33;--stage:#13131a;--hd:#0e0e12ee;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:calc(70px + env(safe-area-inset-top,0px))}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hd);z-index:10}
+a{color:inherit;text-decoration:none}
+.w{max-width:1140px;margin:0 auto;padding:0 18px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:11;background:var(--hd);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd)}
+.hd{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-weight:800;font-size:1.25rem;display:flex;gap:8px;align-items:center}
+.logo i{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--ac),var(--ac2));display:inline-block}
+nav{display:flex;gap:24px;font-size:.92rem;color:var(--mut)}nav a:hover{color:var(--tx)}
+.btn{display:inline-block;font:inherit;border:0;border-radius:10px;padding:11px 18px;cursor:pointer;background:linear-gradient(135deg,var(--ac),var(--ac2));color:var(--acx);font-weight:700;text-align:center}
+.btn.alt{background:transparent;color:var(--tx);border:1px solid var(--bd);font-weight:600}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.sm{padding:8px 14px;font-size:.88rem}
+@media(max-width:760px){nav{display:none}}
+.hero{text-align:center;padding:56px 0 28px}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.1;margin:0 0 14px;letter-spacing:-.02em}
+.hero h1 b{background:linear-gradient(135deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{max-width:620px;margin:0 auto 22px;color:var(--mut);font-size:1.05rem}
+.badge{display:inline-block;border:1px solid var(--bd);border-radius:99px;padding:4px 12px;font-size:.8rem;color:var(--mut);margin-bottom:16px;background:var(--card)}
+.studio{display:grid;grid-template-columns:340px 1fr;gap:16px;margin-bottom:64px}
+@media(max-width:860px){.studio{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px}
+.drop{border:2px dashed var(--bd);border-radius:12px;padding:20px 12px;text-align:center;cursor:pointer;color:var(--mut);font-size:.92rem}
+.drop:hover,.drop.on{border-color:var(--ac)}.drop b{display:block;color:var(--tx)}
+#thumb{display:none;max-width:100%;max-height:130px;border-radius:8px;margin:0 auto 8px}
+.lb{display:block;font-size:.82rem;margin:14px 0 4px;color:var(--mut)}.lb span{float:right;color:var(--tx)}
+input[type=range]{width:100%;accent-color:var(--ac)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:14px}
+.seg label{border:1px solid var(--bd);border-radius:10px;padding:8px;font-size:.82rem;text-align:center;cursor:pointer;line-height:1.25}
+.seg input{display:none}.seg input:checked+span{color:var(--ac);font-weight:700}
+.seg label:has(input:checked){border-color:var(--ac)}
+.seg label:has(input:disabled){opacity:.45;cursor:not-allowed}
+.go{width:100%;margin-top:16px;padding:14px;font-size:1.02rem}
+.note{font-size:.78rem;color:var(--mut);margin:12px 0 0}
+#stage{position:relative;height:min(72vh,620px);min-height:380px;border-radius:16px;overflow:hidden;background:var(--stage);border:1px solid var(--bd)}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#empty,#busy{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px;color:var(--mut)}
+#busy{display:none;background:color-mix(in srgb,var(--stage) 88%,transparent);color:var(--tx);z-index:2}
+.bar{width:240px;height:6px;border-radius:3px;background:var(--bd);overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--ac);transition:width .25s}
+.tools{position:absolute;top:10px;right:10px;display:none;gap:6px;z-index:1}
+.hint{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-size:.76rem;color:var(--mut);pointer-events:none;display:none}
+section{margin-bottom:64px}section h2{font-size:1.7rem;margin:0 0 6px;text-align:center}.lead{text-align:center;color:var(--mut);margin:0 auto 26px;max-width:560px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card h3{margin:8px 0 4px;font-size:1.05rem}.card p{margin:0;color:var(--mut);font-size:.92rem}
+.num{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));color:var(--acx);display:grid;place-items:center;font-weight:800}
+details{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin-bottom:10px;max-width:760px;margin-inline:auto}
+summary{cursor:pointer;font-weight:600}details p{color:var(--mut);margin:8px 0 0;font-size:.93rem}
+footer{border-top:1px solid var(--bd);padding:32px 0;color:var(--mut);font-size:.88rem;background:var(--card)}
+.ft{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between}.ft div{max-width:320px}.ft b{color:var(--tx)}
+.ft a{display:block;margin-top:6px}.ft a:hover{color:var(--tx)}.cp{margin-top:22px;padding-top:16px;border-top:1px solid var(--bd);display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+</style>
+</head>
+<body>
+<header><div class="w hd">
+  <a href="#top" class="logo"><i></i>Form3D</a>
+  <nav><a href="#yaratish">Studiya</a><a href="#qanday">Qanday ishlaydi</a><a href="#imkoniyat">Imkoniyatlar</a><a href="#faq">Savollar</a></nav>
+  <a href="#yaratish" class="btn sm">Boshlash</a>
+</div></header>
+
+<main id="top">
+<div class="w hero">
+  <span class="badge">✨ Rasmdan 3D model — brauzerda</span>
+  <h1>Oddiy rasmni <b>3D modelga</b> aylantiring</h1>
+  <p>Rasm yuklang, rejimni tanlang va “3D yaratish” tugmasini bosing. Natijani 360° aylantirib ko‘ring va GLB, OBJ, STL formatlarida yuklab oling.</p>
+  <a href="#yaratish" class="btn">Studiyaga o‘tish ↓</a>
+</div>
+
+<div class="w studio" id="yaratish">
+  <div class="card">
+    <div class="drop" id="drop"><img id="thumb" alt=""><b>1. Rasmni tashlang</b>yoki bosib tanlang (PNG, JPG, WebP)</div>
+    <input type="file" id="file" accept="image/*" hidden>
+    <div class="seg">
+      <label><input type="radio" name="mode" value="ai" checked><span>🤖 AI 3D<br><small>to‘liq jism, hamma tomoni</small></span></label>
+      <label><input type="radio" name="mode" value="relief"><span>🖼 Teksturali relyef<br><small>rasmga aniq mos</small></span></label>
+    </div>
+    <div id="relOpts">
+      <label class="lb">Qalinlik <span id="vT">50</span></label><input type="range" id="thick" min="10" max="100" value="50">
+      <label class="lb">Fonni olib tashlash <span id="vB">30</span></label><input type="range" id="bg" min="0" max="100" value="30">
+      <label class="lb">Sifat (detallik) <span id="vR">240</span></label><input type="range" id="res" min="120" max="360" step="20" value="240">
+    </div>
+    <button class="btn go" id="go" disabled>🧊 3D yaratish</button>
+    <button class="btn alt go" id="dlZip" style="margin-top:8px" disabled>⬇ Yuklab olish (ZIP: GLB, OBJ, STL)</button>
+    <button class="btn alt go" id="dlPng" style="margin-top:8px;padding:10px" disabled>🖼 PNG sifatida saqlash</button>
+    <p class="note" id="modeNote"></p>
+  </div>
+  <div id="stage">
+    <div id="empty"><div style="font-size:3rem">🧊</div><div id="et">Rasm yuklang va “3D yaratish” tugmasini bosing</div></div>
+    <div id="busy"><div id="bt">Tayyorlanmoqda…</div><div class="bar"><i id="bi"></i></div></div>
+    <div class="tools"><button class="btn alt sm" id="wf">Tur</button><button class="btn alt sm" id="rs">↺ Kamera</button><button class="btn alt sm" id="ar">⟳ Aylanish</button></div>
+    <div class="hint" id="hint">Chap tugma — aylantirish · G‘ildirak — yaqinlashtirish · O‘ng tugma — siljitish</div>
+  </div>
+</div>
+
+<section id="qanday"><div class="w">
+  <h2>Qanday ishlaydi</h2><p class="lead">Uch oddiy qadam — ro‘yxatdan o‘tish shart emas.</p>
+  <div class="g3">
+    <div class="card"><div class="num">1</div><h3>Rasm yuklang</h3><p>Bitta ob’ekt tushirilgan rasm yoki shaffof PNG eng yaxshi natija beradi.</p></div>
+    <div class="card"><div class="num">2</div><h3>3D yarating</h3><p>AI rejimi jismni qismlardan quradi, relyef rejimi rasmni teksturali hajmga aylantiradi.</p></div>
+    <div class="card"><div class="num">3</div><h3>Ko‘ring va yuklang</h3><p>Sichqoncha bilan 360° aylantiring, so‘ng GLB, OBJ yoki STL faylni saqlang.</p></div>
+  </div>
+</div></section>
+
+<section id="imkoniyat"><div class="w">
+  <h2>Imkoniyatlar</h2><p class="lead">Hammasi brauzeringizda, rasmingiz serverga saqlanmaydi.</p>
+  <div class="g3">
+    <div class="card"><h3>🔄 360° ko‘rinish</h3><p>Aylantirish, yaqinlashtirish, siljitish va simli (wireframe) ko‘rinish.</p></div>
+    <div class="card"><h3>📦 Uch format</h3><p>GLB (rangli), OBJ va STL — Blender, Unity va 3D printer uchun.</p></div>
+    <div class="card"><h3>🎨 Teksturali sifat</h3><p>Rasm teksturasi, yumshoq chekkalar va yopiq jism — printerga tayyor.</p></div>
+    <div class="card"><h3>🔒 Maxfiylik</h3><p>Relyef rejimi to‘liq qurilmangizda ishlaydi. AI rejimida rasm tahlil uchun Claude’ga yuboriladi.</p></div>
+  </div>
+</div></section>
+
+<section id="faq"><div class="w">
+  <h2>Ko‘p so‘raladigan savollar</h2><p class="lead">&nbsp;</p>
+  <details><summary>Qaysi rejimni tanlash kerak?</summary><p>Mebel, idish, o‘yinchoq, lampa kabi ob’ektlar uchun AI 3D (orqa tomoni ham quriladi). Portret, rasm yoki logotip uchun teksturali relyef yaxshiroq.</p></details>
+  <details><summary>Bu professional fotogrammetriya darajasidami?</summary><p>Yo‘q. Bitta rasmdan to‘liq aniq 3D tiklash serverda ishlaydigan maxsus modellarni talab qiladi. AI rejimi taxminiy, geometrik shakllardan iborat model quradi; natija ob’ektga qarab farq qiladi.</p></details>
+  <details><summary>AI rejimi ishlamayapti</summary><p>U Claude ilovasida ochilganda va ruxsat berilganda ishlaydi. Aks holda teksturali relyef rejimidan foydalaning.</p></details>
+  <details><summary>Fayl nega ZIP ichida?</summary><p>Brauzer xavfsizligi tufayli .glb to‘g‘ridan-to‘g‘ri saqlanmaydi. ZIP ichidan chiqarib oling.</p></details>
+</div></section>
+</main>
+
+<footer><div class="w">
+  <div class="ft">
+    <div><b>Form3D</b><p>Rasmdan 3D modelga aylantiruvchi bepul onlayn vosita.</p></div>
+    <div><b>Sahifa</b><a href="#yaratish">Studiya</a><a href="#qanday">Qanday ishlaydi</a><a href="#faq">Savollar</a></div>
+    <div><b>Formatlar</b><span>GLB · OBJ · STL · PNG</span></div>
+  </div>
+  <div class="cp"><span>© 2026 Form3D. Barcha huquqlar himoyalangan.</span><span>Faqat o‘zingizga tegishli rasmlarni yuklang.</span></div>
+</div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/GLTFExporter.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/OBJExporter.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/STLExporter.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const $=s=>document.querySelector(s), tick=()=>new Promise(r=>setTimeout(r,40));
+let renderer,scene,camera,controls,model=null,curImg=null,working=false,wire=false,aiOK=false;
+const mode=()=>document.querySelector('input[name=mode]:checked').value;
+
+function initThree(){
+  const st=$('#stage');
+  renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
+  renderer.outputEncoding=THREE.sRGBEncoding;renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+  st.insertBefore(renderer.domElement,st.firstChild);
+  scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(40,1,.1,100);camera.position.set(0,0,5.5);
+  scene.add(new THREE.HemisphereLight(0xffffff,0x777788,.85));
+  [[3,4,5,.9],[-4,-2,-5,.6],[-4,3,2,.35]].forEach(([x,y,z,i])=>{const l=new THREE.DirectionalLight(0xffffff,i);l.position.set(x,y,z);scene.add(l)});
+  controls=new THREE.OrbitControls(camera,renderer.domElement);
+  Object.assign(controls,{enableDamping:true,minDistance:2,maxDistance:14,autoRotate:true,autoRotateSpeed:2.5});
+  controls.addEventListener('start',()=>controls.autoRotate=false);
+  const rz=()=>{const w=st.clientWidth,h=st.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()};
+  new ResizeObserver(rz).observe(st);rz();
+  (function l(){requestAnimationFrame(l);controls.update();renderer.render(scene,camera)})();
+}
+const progress=(t,p)=>{$('#bt').textContent=t;$('#bi').style.width=p+'%'};
+function setModel(m){
+  if(model){scene.remove(model);model.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){if(o.material.map)o.material.map.dispose();o.material.dispose()}})}
+  model=m;scene.add(m);applyWire();controls.autoRotate=true;
+  ['.tools','#hint'].forEach(s=>$(s).style.display=s=='.tools'?'flex':'block');
+  $('#dlZip').disabled=$('#dlPng').disabled=false;
+}
+function applyWire(){model&&model.traverse(o=>{if(o.material)o.material.wireframe=wire})}
+
+function blur(a,W,H,n){let b=new Float32Array(a.length);for(let k=0;k<n;k++){for(let y=0;y<H;y++)for(let x=0;x<W;x++){let s=0,c=0;for(let dy=-1;dy<=1;dy++){const yy=y+dy;if(yy<0||yy>=H)continue;for(let dx=-1;dx<=1;dx++){const xx=x+dx;if(xx<0||xx>=W)continue;s+=a[yy*W+xx];c++}}b[y*W+x]=s/c}[a,b]=[b,a]}return a}
+function comps(m,W,H,want){
+  const L=new Int32Array(W*H).fill(-1),st=new Int32Array(W*H),sz=[];let k=0;
+  for(let s=0;s<W*H;s++){if(m[s]!==want||L[s]>=0)continue;let sp=0,n=0;st[sp++]=s;L[s]=k;
+    while(sp){const p=st[--sp];n++;const x=p%W,y=(p/W)|0;
+      for(const [ok,q] of [[x>0,p-1],[x<W-1,p+1],[y>0,p-W],[y<H-1,p+W]])if(ok&&m[q]===want&&L[q]<0){L[q]=k;st[sp++]=q}}
+    sz.push(n);k++}
+  return{L,sz}}
+
+async function buildRelief(img){
+  progress('Rasm tahlil qilinmoqda…',10);await tick();
+  const N=+$('#res').value,sc=N/Math.max(img.naturalWidth,img.naturalHeight);
+  const W=Math.max(8,Math.round(img.naturalWidth*sc)),H=Math.max(8,Math.round(img.naturalHeight*sc)),NP=W*H;
+  const cv=document.createElement('canvas');cv.width=W;cv.height=H;const cx=cv.getContext('2d',{willReadFrequently:true});cx.drawImage(img,0,0,W,H);
+  const px=cx.getImageData(0,0,W,H).data;let mask=new Uint8Array(NP),tr=0;
+  for(let i=0;i<NP;i++)if(px[i*4+3]<128)tr++;
+  const T=+$('#bg').value;
+  if(tr>NP*.02){for(let i=0;i<NP;i++)mask[i]=px[i*4+3]>=128?1:0}
+  else if(T>0){let r=0,g=0,b=0,n=0;const add=i=>{r+=px[i*4];g+=px[i*4+1];b+=px[i*4+2];n++};
+    for(let x=0;x<W;x++){add(x);add((H-1)*W+x)}for(let y=0;y<H;y++){add(y*W);add(y*W+W-1)}
+    r/=n;g/=n;b/=n;for(let i=0;i<NP;i++)mask[i]=Math.hypot(px[i*4]-r,px[i*4+1]-g,px[i*4+2]-b)>T*2.2?1:0}
+  else mask.fill(1);
+  progress('Ob’ekt ajratilmoqda…',30);await tick();
+  let c=comps(mask,W,H,1);
+  if(c.sz.length){let b=0;c.sz.forEach((s,i)=>{if(s>c.sz[b])b=i});if(c.sz[b]<NP*.02)mask.fill(1);else for(let i=0;i<NP;i++)mask[i]=c.L[i]===b?1:0}else mask.fill(1);
+  c=comps(mask,W,H,0);const out=new Set();
+  for(let x=0;x<W;x++){out.add(c.L[x]);out.add(c.L[(H-1)*W+x])}for(let y=0;y<H;y++){out.add(c.L[y*W]);out.add(c.L[y*W+W-1])}
+  for(let i=0;i<NP;i++)if(!mask[i]&&!out.has(c.L[i]))mask[i]=1;
+  progress('Chuqurlik xaritasi…',50);await tick();
+  const dt=new Float32Array(NP);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x;dt[i]=!mask[i]?0:(x==0||y==0||x==W-1||y==H-1)?1:1e9}
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x;if(!mask[i])continue;let v=dt[i];
+    if(x>0)v=Math.min(v,dt[i-1]+1);if(y>0){v=Math.min(v,dt[i-W]+1);if(x>0)v=Math.min(v,dt[i-W-1]+1.414);if(x<W-1)v=Math.min(v,dt[i-W+1]+1.414)}dt[i]=v}
+  for(let y=H-1;y>=0;y--)for(let x=W-1;x>=0;x--){const i=y*W+x;if(!mask[i])continue;let v=dt[i];
+    if(x<W-1)v=Math.min(v,dt[i+1]+1);if(y<H-1){v=Math.min(v,dt[i+W]+1);if(x<W-1)v=Math.min(v,dt[i+W+1]+1.414);if(x>0)v=Math.min(v,dt[i+W-1]+1.414)}dt[i]=v}
+  let mx=1;for(let i=0;i<NP;i++){dt[i]=Math.sqrt(dt[i]);if(mask[i]&&dt[i]>mx)mx=dt[i]}
+  let dep=new Float32Array(NP),lum=new Float32Array(NP);
+  for(let i=0;i<NP;i++){dep[i]=mask[i]?Math.pow(dt[i]/mx,.85):0;lum[i]=(.299*px[i*4]+.587*px[i*4+1]+.114*px[i*4+2])/255}
+  dep=blur(dep,W,H,4);lum=blur(lum,W,H,2);
+  progress('Tekstura tayyorlanmoqda…',65);await tick();
+  const tw=Math.min(img.naturalWidth,1024),th=Math.round(tw*img.naturalHeight/img.naturalWidth);
+  const at=document.createElement('canvas');at.width=tw*2;at.height=th;const a=at.getContext('2d');
+  a.drawImage(img,0,0,tw,th);
+  const sm=document.createElement('canvas');sm.width=Math.max(4,tw>>5);sm.height=Math.max(4,th>>5);sm.getContext('2d').drawImage(img,0,0,sm.width,sm.height);
+  a.imageSmoothingEnabled=true;a.drawImage(sm,tw,0,tw,th);a.fillStyle='rgba(0,0,0,.25)';a.fillRect(tw,0,tw,th);
+  progress('3D jism qurilmoqda…',80);await tick();
+  const S=(+$('#thick').value)/100*.6,base=.03,u=2.4/Math.max(W,H),fi=new Int32Array(NP).fill(-1),pos=[],uv=[];let nv=0;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x;if(!mask[i])continue;
+    const h=base+S*(.8*dep[i]+.2*lum[i]*Math.min(1,dep[i]*4+.2)),X=(x-W/2)*u,Y=(H/2-y)*u,ux=x/(W-1),vy=1-y/(H-1);
+    pos.push(X,Y,h,X,Y,-h);uv.push(ux*.5,vy,.5+ux*.5,vy);fi[i]=nv;nv+=2}
+  const F=i=>fi[i],B=i=>fi[i]+1,idx=[],full=new Uint8Array(NP);
+  for(let y=0;y<H-1;y++)for(let x=0;x<W-1;x++){const a0=y*W+x;if(mask[a0]&&mask[a0+1]&&mask[a0+W]&&mask[a0+W+1])full[a0]=1}
+  const isF=(x,y)=>x>=0&&y>=0&&x<W-1&&y<H-1&&full[y*W+x]===1,wall=(p,q)=>idx.push(F(p),F(q),B(q),F(p),B(q),B(p));
+  for(let y=0;y<H-1;y++)for(let x=0;x<W-1;x++){if(!full[y*W+x])continue;const a0=y*W+x,b=a0+1,c0=a0+W,d=c0+1;
+    idx.push(F(a0),F(c0),F(b),F(b),F(c0),F(d),B(a0),B(b),B(c0),B(b),B(d),B(c0));
+    if(!isF(x,y-1))wall(a0,b);if(!isF(x,y+1))wall(d,c0);if(!isF(x-1,y))wall(c0,a0);if(!isF(x+1,y))wall(b,d)}
+  if(!idx.length)throw new Error('Ob’ekt topilmadi');
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+  g.setIndex(new THREE.Uint32BufferAttribute(idx,1));g.computeVertexNormals();
+  const tex=new THREE.CanvasTexture(at);tex.encoding=THREE.sRGBEncoding;tex.anisotropy=8;
+  const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({map:tex,roughness:.7,metalness:.03}));m.name='model';
+  return m;
+}
+
+async function buildAI(img){
+  const s=window.claude&&await window.claude.use('sample');
+  if(!s)throw new Error('AI rejimi bu yerda mavjud emas. Relyef rejimini tanlang');
+  progress('Rasm Claude’ga yuborilmoqda…',15);await tick();
+  const k=Math.min(1,768/Math.max(img.naturalWidth,img.naturalHeight)),cv=document.createElement('canvas');
+  cv.width=Math.round(img.naturalWidth*k);cv.height=Math.round(img.naturalHeight*k);
+  const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,cv.width,cv.height);x.drawImage(img,0,0,cv.width,cv.height);
+  const blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',.9));
+  progress('AI ob’ektni tahlil qilib, 3D qurmoqda… (10–40 soniya)',40);
+  const prompt=`You are an expert 3D modeler. Study the image and rebuild its main object as a 3D model from primitives, as faithful as possible in proportions, colors and details, including the back and underside. Coordinate system: y up, +z towards the viewer of the photo, object centered at origin and about 2.4 units in its largest dimension. Return ONLY JSON, no markdown: {"parts":[{"t":"box|sphere|cylinder|cone|torus|lathe","p":[x,y,z],"r":[rx,ry,rz in degrees],"s":[sx,sy,sz],"c":"#rrggbb","m":metalness 0-1,"o":roughness 0-1,"pr":[[radius,y],...]}]}. Sizes: box s=full size; sphere s=diameters (ellipsoids allowed); cylinder and cone s=[diameter,height,diameter]; torus s=[outer diameter,outer diameter,tube thickness]; lathe = surface of revolution around the y axis using 8-24 profile points "pr" (radius,y) ordered bottom to top (use for bottles, cups, vases, lamps, round bodies; p and r still apply, s=[1,1,1]). Use 6-45 parts, split the object into its real components with correct colors, no ground, no background.`;
+  const t=await s(prompt,{images:[blob],modelTier:'complex',cache:false});
+  const txt=(t&&t.text)||'';const mt=txt.match(/\{[\s\S]*\}/);
+  if(!mt)throw new Error('AI javobi tushunarsiz. Qayta urinib ko‘ring');
+  progress('Model yig‘ilmoqda…',85);await tick();
+  const parts=JSON.parse(mt[0]).parts;if(!Array.isArray(parts)||!parts.length)throw new Error('AI qism topa olmadi');
+  const grp=new THREE.Group(),D=Math.PI/180,n=(v,d)=>Number.isFinite(+v)?+v:d,v3=(a,d)=>[0,1,2].map(i=>n(a&&a[i],d));
+  for(const q of parts.slice(0,60)){
+    const sz=v3(q.s,1).map(v=>Math.max(Math.abs(v),.01));let g;
+    switch(q.t){
+      case'sphere':g=new THREE.SphereGeometry(.5,48,32);break;
+      case'cylinder':g=new THREE.CylinderGeometry(.5,.5,1,48);break;
+      case'cone':g=new THREE.ConeGeometry(.5,1,48);break;
+      case'torus':{const t0=Math.min(sz[2],sz[0]*.5);g=new THREE.TorusGeometry((sz[0]-t0)/2,t0/2,24,64);sz[0]=sz[1]=sz[2]=1;break}
+      case'lathe':{const pr=(q.pr||[]).filter(p=>Array.isArray(p)).map(p=>new THREE.Vector2(Math.max(n(p[0],.01),.001),n(p[1],0)));if(pr.length<2)continue;g=new THREE.LatheGeometry(pr,64);sz[0]=sz[1]=sz[2]=1;break}
+      default:g=new THREE.BoxGeometry(1,1,1)}
+    const col=new THREE.Color(/^#[0-9a-f]{6}$/i.test(q.c)?q.c:'#cccccc').convertSRGBToLinear();
+    const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:col,metalness:Math.min(1,Math.max(0,n(q.m,.1))),roughness:Math.min(1,Math.max(0,n(q.o,.6))),side:q.t=='lathe'?THREE.DoubleSide:THREE.FrontSide}));
+    m.scale.set(...sz);const p=v3(q.p,0),r=v3(q.r,0);m.position.set(...p);m.rotation.set(r[0]*D,r[1]*D,r[2]*D);grp.add(m)}
+  if(!grp.children.length)throw new Error('Model bo‘sh chiqdi');
+  const bx=new THREE.Box3().setFromObject(grp),sv=new THREE.Vector3(),c=new THREE.Vector3();bx.getSize(sv);bx.getCenter(c);
+  const f=2.4/Math.max(sv.x,sv.y,sv.z,.001);grp.children.forEach(m=>{m.position.sub(c).multiplyScalar(f);m.scale.multiplyScalar(f)});
+  grp.name='model';return grp;
+}
+
+async function generate(){
+  if(!curImg||working)return;working=true;
+  $('#empty').style.display='none';$('#busy').style.display='flex';$('#go').disabled=true;
+  try{setModel(mode()=='ai'?await buildAI(curImg):await buildRelief(curImg));progress('Tayyor!',100);await tick()}
+  catch(e){console.error(e);const m=e&&(e.message||e.code)||'noma’lum xato';
+    if(!model){$('#empty').style.display='flex'}$('#et').textContent='Xatolik: '+m+(e&&e.code=='not_granted'?' (ruxsat berilmadi)':'');}
+  finally{$('#busy').style.display='none';working=false;$('#go').disabled=!curImg}
+}
+
+function loadFile(f){
+  if(!f||!f.type.startsWith('image/'))return;
+  const url=URL.createObjectURL(f),img=new Image();
+  img.onload=()=>{curImg=img;const t=$('#thumb');t.src=url;t.style.display='block';$('#go').disabled=false;
+    if(!model)$('#et').textContent='Rasm tayyor. “3D yaratish” tugmasini bosing'};
+  img.src=url;
+}
+async function saveFile(name,blob){
+  try{const d=window.claude&&await window.claude.use('downloads');if(d){await d.save({filename:name,data:blob});return}}catch(e){if(e&&e.code==='declined')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();
+}
+async function exportZip(){
+  if(!model)return;const b=$('#dlZip'),o=b.textContent;b.disabled=true;b.textContent='Fayl tayyorlanmoqda…';
+  try{const z=new JSZip(),was=wire;wire=false;applyWire();
+    z.file('model.glb',await new Promise((r,j)=>new THREE.GLTFExporter().parse(model,r,{binary:true},j)));
+    z.file('model.obj',new THREE.OBJExporter().parse(model));
+    const s=new THREE.STLExporter().parse(model,{binary:true});
+    z.file('model.stl',s instanceof DataView?new Uint8Array(s.buffer,s.byteOffset,s.byteLength):s);
+    wire=was;applyWire();
+    await saveFile('model-3d.zip',await z.generateAsync({type:'blob',compression:'DEFLATE'}));
+  }catch(e){console.error(e);alert('Faylni tayyorlashda xatolik: '+(e.message||e))}
+  b.textContent=o;b.disabled=false;
+}
+
+initThree();
+const drop=$('#drop'),fi=$('#file');
+drop.onclick=()=>fi.click();fi.onchange=()=>loadFile(fi.files[0]);
+['dragenter','dragover'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('on')}));
+['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('on')}));
+drop.addEventListener('drop',e=>loadFile(e.dataTransfer.files[0]));
+[['thick','vT'],['bg','vB'],['res','vR']].forEach(([i,v])=>$('#'+i).oninput=()=>$('#'+v).textContent=$('#'+i).value);
+function syncMode(){const ai=mode()=='ai';$('#relOpts').style.display=ai?'none':'block';
+  $('#modeNote').textContent=ai?'AI rejimi rasmni Claude’ga yuboradi va ob’ektni geometrik qismlardan quradi. Natija taxminiy; murakkab ob’ektlarda aniqlik past bo‘lishi mumkin.':'Relyef rejimi qurilmangizda ishlaydi: rasm tekstura bo‘ladi, orqa tomoni esa taxminiy yumshoq rang bilan to‘ldiriladi.'}
+document.querySelectorAll('input[name=mode]').forEach(r=>r.onchange=syncMode);syncMode();
+(async()=>{try{const s=window.claude&&await window.claude.use('sample');aiOK=!!s}catch(e){}
+  if(!aiOK){const r=document.querySelector('input[value=ai]');r.disabled=true;document.querySelector('input[value=relief]').checked=true;syncMode()}})();
+$('#go').onclick=generate;$('#dlZip').onclick=exportZip;
+$('#dlPng').onclick=()=>{renderer.render(scene,camera);renderer.domElement.toBlob(b=>b&&saveFile('3d-korinish.png',b),'image/png')};
+$('#wf').onclick=()=>{wire=!wire;applyWire()};
+$('#rs').onclick=()=>{controls.reset();camera.position.set(0,0,5.5);controls.update()};
+$('#ar').onclick=()=>controls.autoRotate=!controls.autoRotate;
+</script>
+</body>
+</html>
